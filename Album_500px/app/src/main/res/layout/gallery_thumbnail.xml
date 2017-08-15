@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<alee.com.album_500px.Helper.SquareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="1dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+</alee.com.album_500px.Helper.SquareLayout>

@@ -21,11 +21,13 @@ import alee.com.album_500px.R;
 
 public class MainActivity extends AppCompatActivity {
     private String TAG = MainActivity.class.getSimpleName();
-    private static final String endpoint = "https://api.500px.com/v1/photos?consumer_key=fAeci4B1pHssX8LnMK788zTmYsIGD8m41Sn5lcRo&image_size=5,4,3,2&feature=fresh_today&page=1";
+    private static final String endpoint = "https://api.500px.com/v1/photos?consumer_key=fAeci4B1pHssX8LnMK788zTmYsIGD8m41Sn5lcRo&image_size=5,4,3,2&feature=fresh_today&page=";
     private ArrayList<Image> images;
     private ProgressDialog pDialog;
     private GalleryAdapter mAdapter;
     private RecyclerView recyclerView;
+    public static int pageCounter = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
 
+        // Adding ScrollListener to RecyclerView for loading more items on end of scroll
+        recyclerView.addOnScrollListener(new CustomScrollListener());
+
+
         fetchImages();
 
     }
@@ -61,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void callImagesAPI(){
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, endpoint, null, new Response.Listener<JSONObject>() {
+                (Request.Method.GET, endpoint+pageCounter, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
@@ -110,10 +116,28 @@ public class MainActivity extends AppCompatActivity {
             image.setMedium(image_url.getJSONObject(1).getString("url"));
             image.setLarge(image_url.getJSONObject(2).getString("url"));
             image.setTimestamp(object.getString("created_at"));
-            images.add(image);
+            //Display photos excluding nude pictures
+            if(!((object.getString("category")).equalsIgnoreCase("4"))){
+                images.add(image);}
 
         }
         mAdapter.notifyDataSetChanged();
+
+    }
+
+    class CustomScrollListener extends RecyclerView.OnScrollListener {
+        CustomScrollListener(){
+        }
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState){
+            switch (newState) {
+                //no scrolling in RecyclerView
+                case RecyclerView.SCROLL_STATE_IDLE:
+                    pageCounter++;
+                    callImagesAPI();
+                    break;
+            }
+
+        }
 
     }
 }

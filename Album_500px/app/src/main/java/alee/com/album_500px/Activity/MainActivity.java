@@ -1,11 +1,14 @@
 package alee.com.album_500px.Activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -49,7 +52,24 @@ public class MainActivity extends AppCompatActivity {
         // Adding ScrollListener to RecyclerView for loading more items on end of scroll
         recyclerView.addOnScrollListener(new CustomScrollListener());
 
+//Handling Touch event on RecyclerView for launching full screen activity
+        recyclerView.addOnItemTouchListener(new GalleryAdapter.RecyclerTouchListener(getApplicationContext(), recyclerView, new GalleryAdapter.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
 
+                Intent intent = new Intent(MainActivity.this, FullScreenImage.class);
+
+                //Passing List of Image Object  and position of current item selected to full screen activity
+                intent.putExtra("images", images);
+                intent.putExtra("position", position);
+                startActivityForResult(intent, 1);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
         fetchImages();
 
     }

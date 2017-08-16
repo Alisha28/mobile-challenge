@@ -1,5 +1,6 @@
 package alee.com.album_500px.Activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Handler;
@@ -37,7 +38,7 @@ import static alee.com.album_500px.Extras.Keys.NAME;
 import static alee.com.album_500px.Extras.Keys.PHOTO;
 import static alee.com.album_500px.Extras.Keys.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private String TAG = MainActivity.class.getSimpleName();
     private static final String endpoint = ADDRESS+PHOTOS+FEATURE+CONSUMER_KEY+SIZE+PAGE;
     private ArrayList<Image> images;

@@ -18,6 +18,10 @@ public class FullScreenImage extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_image);
+
+        //launching activity with animation
+        overridePendingTransition(R.anim.appearance_go_in, R.anim.appearance_go_out);
+
         viewPager = (ViewPager) findViewById(R.id.pager);
 
         Intent intent = this.getIntent();
@@ -43,5 +47,6 @@ public class FullScreenImage extends Activity {
      */
     public void finishMyActivity() {
         finish();
+        overridePendingTransition(R.anim.appearance_back_in, R.anim.appearance_back_out);
     }
 }

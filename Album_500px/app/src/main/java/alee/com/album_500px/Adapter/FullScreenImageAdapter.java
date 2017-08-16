@@ -48,14 +48,28 @@ public class FullScreenImageAdapter extends PagerAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View viewLayout = inflater.inflate(R.layout.image_fullscreen_preview, container, false);
 
+		viewLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Hide/Show Action bar on view click
+				if(_activity.getActionBar().isShowing()){
+					_activity.getActionBar().hide();
+				}else{
+					_activity.getActionBar().show();
+				}
+			}
+		});
 
 		ImageView imgDisplay = (ImageView) viewLayout.findViewById(R.id.image_preview);
-		TextView des = (TextView) viewLayout.findViewById(R.id.des);
+		TextView desc = (TextView) viewLayout.findViewById(R.id.des);
 		TextView date_created = (TextView) viewLayout.findViewById(R.id.created_at);
 
 		String name = _imagePaths.get(position).getName();
+		String des = _imagePaths.get(position).getDescription();
+
 		Image image = _imagePaths.get(position);
-		des.setText(image.getDescription());
+		if(!des.equalsIgnoreCase("untitled")&&!des.equalsIgnoreCase("null")&&!des.equalsIgnoreCase("")&&des!=null){
+			desc.setText(image.getDescription());}
 		date_created.setText(image.getTimestamp());
 
 		// Check for untitled/null/empty values in name

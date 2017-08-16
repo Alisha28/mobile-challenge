@@ -14,7 +14,6 @@ public class FullScreenImage extends Activity {
     private FullScreenImageAdapter adapter;
     private ViewPager viewPager;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,5 +27,21 @@ public class FullScreenImage extends Activity {
         adapter = new FullScreenImageAdapter(FullScreenImage.this, images);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);         // displaying selected image first
+    }
+
+    //Sending current item position back to ActivityResult
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("pointer", viewPager.getCurrentItem());
+        setResult(Activity.RESULT_OK, intent);
+        finishMyActivity();
+    }
+
+    /**
+     * Finishing activity
+     */
+    public void finishMyActivity() {
+        finish();
     }
 }

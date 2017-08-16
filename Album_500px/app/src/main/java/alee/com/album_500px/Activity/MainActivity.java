@@ -2,6 +2,7 @@ package alee.com.album_500px.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,9 +23,23 @@ import alee.com.album_500px.App.AppController;
 import alee.com.album_500px.Model.Image;
 import alee.com.album_500px.R;
 
+import static alee.com.album_500px.Extras.APILinkManager.ADDRESS;
+import static alee.com.album_500px.Extras.APILinkManager.CONSUMER_KEY;
+import static alee.com.album_500px.Extras.APILinkManager.FEATURE;
+import static alee.com.album_500px.Extras.APILinkManager.PAGE;
+import static alee.com.album_500px.Extras.APILinkManager.PHOTOS;
+import static alee.com.album_500px.Extras.APILinkManager.SIZE;
+import static alee.com.album_500px.Extras.Keys.CATAGORY;
+import static alee.com.album_500px.Extras.Keys.CREATED_AT;
+import static alee.com.album_500px.Extras.Keys.DESCRIPTION;
+import static alee.com.album_500px.Extras.Keys.IMAGES;
+import static alee.com.album_500px.Extras.Keys.NAME;
+import static alee.com.album_500px.Extras.Keys.PHOTO;
+import static alee.com.album_500px.Extras.Keys.URL;
+
 public class MainActivity extends AppCompatActivity {
     private String TAG = MainActivity.class.getSimpleName();
-    private static final String endpoint = "https://api.500px.com/v1/photos?consumer_key=fAeci4B1pHssX8LnMK788zTmYsIGD8m41Sn5lcRo&image_size=5,4,3,2&feature=fresh_today&page=";
+    private static final String endpoint = ADDRESS+PHOTOS+FEATURE+CONSUMER_KEY+SIZE+PAGE;
     private ArrayList<Image> images;
     private ProgressDialog pDialog;
     private GalleryAdapter mAdapter;
@@ -52,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         // Adding ScrollListener to RecyclerView for loading more items on end of scroll
         recyclerView.addOnScrollListener(new CustomScrollListener());
 
-//Handling Touch event on RecyclerView for launching full screen activity
+        //Handling Touch event on RecyclerView for launching full screen activity
         recyclerView.addOnItemTouchListener(new GalleryAdapter.RecyclerTouchListener(getApplicationContext(), recyclerView, new GalleryAdapter.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -95,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                         pDialog.hide();
 
                         try {
-                            if(response.getJSONArray("photos")!=null){
+                            if(response.getJSONArray(PHOTO)!=null){
                                 parseJSON(response);
                             }
                         } catch (JSONException e) {
@@ -123,21 +138,21 @@ public class MainActivity extends AppCompatActivity {
      * @throws JSONException
      */
     public void parseJSON(JSONObject response) throws JSONException {
-        JSONArray photoArray = response.getJSONArray("photos");
+        JSONArray photoArray = response.getJSONArray(PHOTO);
 
         for (int i = 0; i < photoArray.length(); i++) {
 
             JSONObject object = photoArray.getJSONObject(i);
             Image image = new Image();
-            image.setName(object.getString("name"));
-            image.setDescription(object.getString("description"));
-            JSONArray image_url = object.getJSONArray("images");
-            image.setSmall(image_url.getJSONObject(1).getString("url"));
-            image.setMedium(image_url.getJSONObject(1).getString("url"));
-            image.setLarge(image_url.getJSONObject(2).getString("url"));
-            image.setTimestamp(object.getString("created_at"));
+            image.setName(object.getString(NAME));
+            image.setDescription(object.getString(DESCRIPTION));
+            JSONArray image_url = object.getJSONArray(IMAGES);
+            image.setSmall(image_url.getJSONObject(1).getString(URL));
+            image.setMedium(image_url.getJSONObject(1).getString(URL));
+            image.setLarge(image_url.getJSONObject(2).getString(URL));
+            image.setTimestamp(object.getString(CREATED_AT));
             //Display photos excluding nude pictures
-            if(!((object.getString("category")).equalsIgnoreCase("4"))){
+            if(!((object.getString(CATAGORY)).equalsIgnoreCase("4"))){
                 images.add(image);}
 
         }
@@ -159,5 +174,23 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    // Fetching the position of current item displayed on ViewPager in Full Screen Activity.
+// So that Gallery view is auto-scrolled to display that item first.
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                final int pointer = data.getIntExtra("pointer",0);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        recyclerView.smoothScrollToPosition(pointer+1);
+                    }
+                }, 200);
+            }
+        }
     }
 }
